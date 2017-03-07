@@ -55,6 +55,24 @@ extension JSONSerialization: JSONParserType {
     /// - parameter object: The instance of `Any` returned from serializing the JSON.
     /// - returns: An instance of `JSON` matching the JSON given to the function.
     public static func makeJSON(with object: Any) -> JSON {
+#if os(Linux)
+        switch object {
+	case let v as Int:    return .int(v)
+	case let v as Float:  return .double(Double(v))
+	case let v as Double: return .double(v)
+        case let arr as [Any]:
+            return makeJSONArray(arr)
+
+        case let dict as [Swift.String: Any]:
+            return makeJSONDictionary(dict)
+
+        case let s as Swift.String:
+            return .string(s)
+
+        default:
+            return .null
+        }
+#else
         switch object {
         case let n as NSNumber:
             let numberType = CFNumberGetType(n)
@@ -101,6 +119,7 @@ extension JSONSerialization: JSONParserType {
         default:
             return .null
         }
+#endif
     }
 
     // MARK: Make a JSON Array
