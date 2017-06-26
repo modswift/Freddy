@@ -473,7 +473,7 @@ public struct JSONParser {
                 }
 
             case .postDecimalDigits, .exponentSign, .exponentDigits:
-                assertionFailure("Invalid internal state while parsing number")
+                fatalError("Invalid internal state while parsing number")
 
             case .done:
                 fatalError("impossible condition")
@@ -500,7 +500,7 @@ public struct JSONParser {
         while parser.state != .done {
             switch parser.state {
             case .leadingMinus, .leadingZero, .preDecimalDigits:
-                assertionFailure("Invalid internal state while parsing number")
+                fatalError("Invalid internal state while parsing number")
 
             case .decimal:
                 try parser.parseDecimal()
