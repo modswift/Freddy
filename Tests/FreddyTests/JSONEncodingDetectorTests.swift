@@ -107,12 +107,21 @@ struct JSONEncodingUTFTestFixtures {
         }
     }
 
+  #if swift(>=4.2)
+    func withPrefixSlice<R>(_ encoding: JSONEncodingDetector.Encoding, includeBOM: Bool, body: (Slice<UnsafeBufferPointer<UInt8>>) throws -> R) rethrows -> R {
+        let array = hexArray(encoding, includeBOM: includeBOM)
+        return try array.withUnsafeBufferPointer {
+            try body($0.prefix(4))
+        }
+    }
+  #else
     func withPrefixSlice<R>(_ encoding: JSONEncodingDetector.Encoding, includeBOM: Bool, body: (RandomAccessSlice<UnsafeBufferPointer<UInt8>>) throws -> R) rethrows -> R {
         let array = hexArray(encoding, includeBOM: includeBOM)
         return try array.withUnsafeBufferPointer {
             try body($0.prefix(4))
         }
     }
+  #endif
 
     // MARK: - UTF16
 
