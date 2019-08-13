@@ -48,7 +48,25 @@ extension Int: JSONDecodable {
     ///           an instance of `Int` cannot be created from the `JSON` value that was
     ///           passed to this initializer.
     public init(json: JSON) throws {
-      #if swift(>=3.2) // hh
+      #if swift(>=4.2) // hh
+        if case let .double(double) = json, double <= Double(Int.max) {
+            self = Int(double)
+        } else if case let .int(int) = json {
+            self = int
+        } else if case let .string(string) = json, let int = Int(string) {
+            self = int
+        }
+        else if case let .string(string) = json,
+            let double = Double(string),
+            let decimalSeparator = string.firstIndex(of: "."),
+            let int = Int(String(string.prefix(upTo: decimalSeparator))),
+            double == Double(int) {
+            self = int
+        }
+        else {
+            throw JSON.Error.valueNotConvertible(value: json, to: Int.self)
+        }
+      #elseif swift(>=3.2) // hh
         if case let .double(double) = json, double <= Double(Int.max) {
             self = Int(double)
         } else if case let .int(int) = json {

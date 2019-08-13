@@ -829,11 +829,20 @@ public extension JSONParser {
 
     /// Creates an instance of `JSON` from UTF-8 encoded `data`.
     static func parse(utf8 data: Data) throws -> JSON {
+      #if swift(>=5.0) // hh
+        return try data.withUnsafeBytes { (bp: UnsafeRawBufferPointer) -> JSON in
+            let ptr    = bp.baseAddress!.assumingMemoryBound(to: UInt8.self)
+            let buffer = UnsafeBufferPointer(start: ptr, count: data.count)
+            var parser = JSONParser(input: buffer)
+            return try parser.parse()
+        }
+      #else
         return try data.withUnsafeBytes { (ptr: UnsafePointer<UInt8>) -> JSON in
             let buffer = UnsafeBufferPointer(start: ptr, count: data.count)
             var parser = JSONParser(input: buffer)
             return try parser.parse()
         }
+      #endif
     }
 
     /// Creates an instance of `JSON` from `string`.

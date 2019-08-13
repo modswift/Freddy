@@ -47,3 +47,4 @@ CODE_SIGN_IDENTITY[sdk=appletvos*] =
 CODE_SIGN_IDENTITY[sdk=watchos*] =
 
 SWIFT_VERSION = 4.2
+//SWIFT_VERSION = 5
